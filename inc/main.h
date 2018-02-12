@@ -39,7 +39,8 @@ void RCC_Configuration(void);
 void GPIO_Configuration(void);
 void NVIC_Configuration(void);
 void	AD9833_INIT( struct ad9833_t *dev, struct spi_t *spi );
-
+void    SPI_INIT( struct spi_t *spi_handle );
+void    TIMER_INIT( struct timer_t *timer_handle );
 extern struct 	ad9833_t	ad9833_dev;
 
 extern void	DELAY_MS( uint32 delay );

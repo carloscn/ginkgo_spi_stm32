@@ -12,6 +12,7 @@ C_SRCS += \
 ../src/spi.c \
 ../src/syscalls.c \
 ../src/system_stm32f10x.c \
+../src/timer.c \
 ../src/uart.c 
 
 OBJS += \
@@ -23,6 +24,7 @@ OBJS += \
 ./src/spi.o \
 ./src/syscalls.o \
 ./src/system_stm32f10x.o \
+./src/timer.o \
 ./src/uart.o 
 
 C_DEPS += \
@@ -34,6 +36,7 @@ C_DEPS += \
 ./src/spi.d \
 ./src/syscalls.d \
 ./src/system_stm32f10x.d \
+./src/timer.d \
 ./src/uart.d 
 
 
@@ -42,7 +45,7 @@ src/%.o: ../src/%.c
 	@echo 'Building file: $<'
 	@echo 'Invoking: MCU GCC Compiler'
 	@echo $(PWD)
-	arm-none-eabi-gcc -mcpu=cortex-m3 -mthumb -mfloat-abi=soft -DSTM32 -DSTM32F1 -DSTM32F103RCTx -DDEBUG -DSTM32F10X_HD -DUSE_STDPERIPH_DRIVER -I"/home/delvis/workspace/AC6/GINKGO_SPI_STM32_AC6/StdPeriph_Driver/inc" -I"/home/delvis/workspace/AC6/GINKGO_SPI_STM32_AC6/inc" -I"/home/delvis/workspace/AC6/GINKGO_SPI_STM32_AC6/CMSIS/device" -I"/home/delvis/workspace/AC6/GINKGO_SPI_STM32_AC6/CMSIS/core" -O0 -g3 -Wall -fmessage-length=0 -ffunction-sections -c -MMD -MP -MF"$(@:%.o=%.d)" -MT"$@" -o "$@" "$<"
+	arm-none-eabi-gcc -mcpu=cortex-m3 -mthumb -mfloat-abi=soft -DSTM32 -DSTM32F1 -DSTM32F103RCTx -DDEBUG -DSTM32F10X_HD -DUSE_STDPERIPH_DRIVER -I"D:/Workspace/AC6/GINKGO_SPI_STM32_AC6/StdPeriph_Driver/inc" -I"D:/Workspace/AC6/GINKGO_SPI_STM32_AC6/inc" -I"D:/Workspace/AC6/GINKGO_SPI_STM32_AC6/CMSIS/device" -I"D:/Workspace/AC6/GINKGO_SPI_STM32_AC6/CMSIS/core" -O0 -g3 -Wall -fmessage-length=0 -ffunction-sections -c -MMD -MP -MF"$(@:%.o=%.d)" -MT"$@" -o "$@" "$<"
 	@echo 'Finished building: $<'
 	@echo ' '
 

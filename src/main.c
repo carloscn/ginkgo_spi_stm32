@@ -5,6 +5,7 @@
 /*  @Copyright  : WeiHaochen (p) 2018 MULTIBEANS_ORG All rights reserved. 	*/
 /*  @Revision   : Ver 1.0.                                                  */
 /*  @Data       : 2018.01.21 Release.                                       */
+/*  @Github     : https://github.com/lifimlt/ginkgo_spi_stm32.git           */
 /*  @Belong     : PROJECT.                                                  */
 /*                                                                          */
 /*  **code : (GBK/GB2312) in Windows 10_x64. Keil uVision472 platform.      */
@@ -55,40 +56,15 @@
 
 void    LED_INIT( struct led_t *led );
 
-struct 	ad9833_t	ad9833_dev;
-struct	spi_t		spi_ad9833;
-struct 	spi_t		spi_ginkgo;
-struct  led_t       led_dev, *led_dev_handle;
+struct 	ad9833_t	ad9833_dev, *ad9833_dev_handle;
+struct	spi_t		ad9833_spi, *ad9833_spi_handle;
+struct  led_t       led_dev,    *led_dev_handle;
+struct  spi_t       test_spi;
+struct  timer_t     timer, *timer_handle;
+uint16_t    rom[256] = {0};
 
-/**
- * \brief    This function is delay time for SYSTEM.
- *
- * \offer    Wei Haochen
- *
- * \param    struct ad7606_t (in ad9833.h document)
- *
- * \return   None.
- *
- *               ____       __________________
- * \note  covst_a    \_____/
- *               ____       __________________
- *        covst_b    \_____/
- *                   |<--->|
- *                     5us
- */
-void	DELAY_US( uint32 delay )
-{
-    SysTick->LOAD	=	72 * delay;
-    SysTick->CTRL	=	0x00000005;
-    while( !( SysTick->CTRL & 0x00010000 ) );
-    SysTick->CTRL	=	0x00000004;
-}
 
-void	DELAY_MS( uint32 delay )
-{
-    for( ; delay > 0; delay-- )
-        DELAY_US( 1000 );
-}
+
 /**
  * \brief    This function is AD7606 start convst
  *
@@ -108,76 +84,55 @@ void	DELAY_MS( uint32 delay )
 int main(void)
 {
     SystemInit();
-    RCC_Configuration();
-    NVIC_Configuration();
-    led_dev_handle  =   &led_dev;
-    LED_INIT(led_dev_handle);
-    printf("nihao \n");
-    while(1)
-    {
 
+    NVIC_Configuration();
+    led_dev_handle      =   &led_dev;
+    ad9833_dev_handle   =   &ad9833_dev;
+    ad9833_spi_handle   =   &ad9833_spi;
+    timer_handle        =   &timer;
+
+
+    //AD9833_INIT( ad9833_dev_handle, ad9833_spi_handle );
+    SPI_INIT( &test_spi );
+    LED_INIT(led_dev_handle);
+    TIMER_INIT( timer_handle );
+    timer.start(timer_handle);
+    while(1) {
+#if 0
+        //test_spi.write( &test_spi, rom, 256 );
         led_dev_handle->on( &led_dev, LED0 );
         led_dev_handle->on( &led_dev, LED1 );
         DELAY_MS(40);
         led_dev_handle->off( &led_dev, LED0 );
         led_dev_handle->off( &led_dev, LED1 );
-        DELAY_MS(4050);
+        DELAY_MS(1050);
+#endif
     }
 }
 
-
-/***************************************************************************//**
- * @brief Init the uarts for STM32 in this project.  by Carlos.
- *
- * @param data - void
- *               - enable the uarts ths GPIO as function port.
- *               - Initializes the interrupt of recv.
- * @param bytesNumber - Number of bytes to write.
- *
- * @return void.
- *******************************************************************************/
-void RCC_Configuration(void)
+void    TIM3_IRQHandler( void )
 {
-    /* Enable system clocks ------------------------------------------------*/
-    ErrorStatus HSEStartUpStatus;
-    RCC_DeInit();																					// System clock reset.
-    RCC_HSEConfig( RCC_HSE_ON );																	// Open the HSE clock.
-    HSEStartUpStatus = RCC_WaitForHSEStartUp();														// Wait for HSE clock.
-    if( HSEStartUpStatus == SUCCESS ) {																// If the HSE time consuming normal.
+    if( timer_handle->check_status(timer_handle) == true ) {
 
-        FLASH_PrefetchBufferCmd( FLASH_PrefetchBuffer_Enable );										// Enable flash reader buffer.
-        FLASH_SetLatency( FLASH_Latency_2 );														// Flash wait state.
-        RCC_HCLKConfig( RCC_SYSCLK_Div1 );															// HCLK = SYSCLK = 72.0MHz
-        RCC_PCLK2Config( RCC_HCLK_Div1 );															// PCLK2 = HCLK = 72.0MHz
-        RCC_PCLK1Config( RCC_HCLK_Div2 );															// PCLK1 = HCLK/2 = 36.0MHz
 
-        RCC_PLLConfig(RCC_PLLSource_HSE_Div1,RCC_PLLMul_9);
-        RCC_PLLCmd(ENABLE);																			// Enable PLL
+        if( timer_handle->counter %5 == 0 ) {
+            led_dev_handle->on( led_dev_handle, LED0 );
+            led_dev_handle->on( led_dev_handle, LED1 );
 
-        while( RCC_GetFlagStatus(RCC_FLAG_PLLRDY) == RESET );										// Wait till PLL is ready.
-        RCC_SYSCLKConfig( RCC_SYSCLKSource_PLLCLK );												// Select PLL as system clock source.
-        while( RCC_GetSYSCLKSource() != 0x08 );														// Wait till PLL is used as system clock source.
+        }
+        if( timer_handle->counter %5 == 3 )  {
+            led_dev_handle->off(led_dev_handle, LED0 );
+            led_dev_handle->off(led_dev_handle, LED1 );
+        }
+
+        timer.counter   ++;
+        timer.clear_interrupt_flag( timer_handle );
+
+    }else {
+        return;
     }
 
-    // notice :
-    // If there is as "RCC_ADCCLKConfig( RCC_PCLK2_Div6 )" peripheral clock.
-    // So, the ADCLK = PCLK2 / 6 = 12MHz.
-
-    /* Enable peripheral clocks ------------------------------------------------*/
-    RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA | RCC_APB2Periph_GPIOD, ENABLE);
-    /* Enable DMA1 and DMA2 clocks */
-    RCC_AHBPeriphClockCmd(RCC_AHBPeriph_DMA1 | RCC_AHBPeriph_DMA2, ENABLE);
-    /* Enable ADC1, ADC2, ADC3 and GPIOC clocks */
-    RCC_APB2PeriphClockCmd(RCC_APB2Periph_ADC1 | RCC_APB2Periph_ADC2 |
-                           RCC_APB2Periph_ADC3 | RCC_APB2Periph_GPIOC, ENABLE);
-    RCC_AHBPeriphClockCmd(RCC_AHBPeriph_DMA1 , ENABLE);
-    RCC_APB2PeriphClockCmd(RCC_APB2Periph_ADC1   , ENABLE);
-    RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA | RCC_APB2Periph_GPIOB ,ENABLE);
-    RCC_APB2PeriphClockCmd(RCC_APB2Periph_AFIO, ENABLE);
-    RCC_AHBPeriphClockCmd(RCC_AHBPeriph_DMA1, ENABLE);
-    RCC_APB2PeriphClockCmd(RCC_APB2Periph_ADC1, ENABLE);
 }
-
 
 
 void NVIC_Configuration(void)
@@ -191,27 +146,14 @@ void NVIC_Configuration(void)
     NVIC_Init(&NVIC_InitStructure);
 }
 
-
-
 void	AD9833_INIT( struct ad9833_t *dev, struct spi_t *spi )
 {
+
+    SPI_INIT( spi );
     dev->hw.ex_spi	=	spi;
     dev->hw.sdi_pin	=	AD9833_STM32_SPI_PIN_SDI;
     dev->hw.clk_pin	=	AD9833_STM32_SPI_PIN_CLK;
     dev->hw.fsy_pin	=	AD9833_STM32_SPI_PIN_FSYNC;
-
-    dev->hw.ex_spi->spi_cfg.spi_num					=	AD9833_STM32_SPI_1;
-    dev->hw.ex_spi->spi_cfg.spi_clk 				=	SPI_BaudRatePrescaler_2;
-    dev->hw.ex_spi->spi_cfg.spi_mode				=	SPI_Mode_Master;
-    dev->hw.ex_spi->spi_cfg.spi_phase				=	SPI_CPHA_1Edge;
-    dev->hw.ex_spi->spi_cfg.spi_pol					=	SPI_CPOL_High;
-    dev->hw.ex_spi->spi_cfg.format.spi_char_num		=	16;
-    dev->hw.ex_spi->spi_cfg.format.spi_first_bit	=	SPI_FirstBit_MSB;
-
-    dev->hw.ex_spi->spi_init						=	&ex_spi_init;
-    dev->hw.ex_spi->spi_pin_set						=	&ex_spi_pin_set;
-    dev->hw.ex_spi->spi_write						=	&ex_spi_write;
-    dev->hw.ex_spi->spi_read						=	&ex_spi_read;
 
     dev->init_device								=	&ad9833_init;
     dev->reset_device								=	&ad9833_reset;
@@ -227,9 +169,55 @@ void	AD9833_INIT( struct ad9833_t *dev, struct spi_t *spi )
 
 }
 
+void    SPI_INIT( struct spi_t *spi_handle )
+{
+    spi_handle->spi_cfg.num         =   SPI2;
+    /*
+     * Set spi hardware parameters.
+     * -> Do not care about the pin correspondence, because it is using a peripheral SPI.
+     * */
+    spi_handle->hw.sys_clock        =   RCC_APB2Periph_SPI1 | RCC_APB2Periph_GPIOA ;
+    spi_handle->hw.clk_pin          =   GPIO_Pin_5;
+    spi_handle->hw.miso_pin         =   GPIO_Pin_6;
+    spi_handle->hw.mosi_pin         =   GPIO_Pin_7;
+    spi_handle->hw.ce_pin           =   0;
+    spi_handle->hw.port             =   GPIOA;
+
+    /*
+     * Set SPI properties.
+     *
+     *      SPI_CLK_OUTOFPHASE  - Clock is Delayed by half clock cycle.
+     *      SPI_CLK_POL_HIGH    - Clock is High Before and after data transfer.
+     *
+     *      Example:
+     *      MCLK____________      ____      ___.....
+     *                      \____/    \____/
+     *                  _________  ________
+     *      MISO______ /         \/        \___.....
+     *                 \_________/\________/
+     *                  MSB(D15) .............> LSB(D01)
+     * */
+    spi_handle->spi_cfg.format.char_num     =   SPI_DataSize_16b;
+    spi_handle->spi_cfg.format.first_bit    =   SPI_FirstBit_MSB;
+    spi_handle->spi_cfg.direction           =   SPI_Direction_2Lines_FullDuplex;
+    spi_handle->spi_cfg.pol                 =   SPI_CPOL_High;
+    spi_handle->spi_cfg.phase               =   SPI_CPHA_2Edge;
+    spi_handle->spi_cfg.mode                =   SPI_Mode_Master;
+    spi_handle->spi_cfg.clk                 =   SPI_BaudRatePrescaler_16;
+
+    spi_handle->init                    =   &ex_spi_init;
+    spi_handle->pin_set                 =   &ex_spi_pin_set;
+    spi_handle->write                   =   &ex_spi_write;
+    spi_handle->read                    =   &ex_spi_read;
+
+
+    spi_handle->init( spi_handle );
+
+}
+
 void	GINKGO_INIT( struct spi_t *spi ) 
 {
-    spi->spi_cfg.spi_num							=	SPI2;
+
 
 }
 
@@ -249,6 +237,58 @@ void    LED_INIT( struct led_t *led )
 }
 
 
+void    TIMER_INIT( struct timer_t *timer_handle )
+{
 
+    timer_handle->tim_num                   =   TIM3;
+    timer_handle->configure.tim_periph_clock    =   RCC_APB1Periph_TIM3;
+    timer_handle->configure.period          =   999;
+    timer_handle->configure.prescaler       =   7199;
+    timer_handle->configure.clock_division  =   0;
+    timer_handle->configure.counter_mode    =   TIM_CounterMode_Up;
+    timer_handle->configure.irq.iqrn        =   TIM3_IRQn;
+    timer_handle->configure.irq.preemption_priority =   0;
+    timer_handle->configure.irq.sub_priority        =   3;
+    timer_handle->counter   =   0;
+
+    timer_handle->init  =   &timer_init;
+    timer_handle->start =   &timer_start;
+    timer_handle->stop  =   &timer_stop;
+    timer_handle->set_time  =   &timer_set_time;
+    timer_handle->check_status      =   &timer_check_status;
+    timer_handle->clear_interrupt_flag  =   &timer_clear_interrupt_flag;
+
+    timer_handle->init( timer_handle );
+}
+
+/**
+ * \brief    This function is delay time for SYSTEM.
+ *
+ * \offer    Wei Haochen
+ *
+ * \param    struct ad7606_t (in ad9833.h document)
+ *
+ * \return   None.
+ *
+ *               ____       __________________
+ * \note  covst_a    \_____/
+ *               ____       __________________
+ *        covst_b    \_____/
+ *                   |<--->|
+ *                     5us
+ */
+void    DELAY_US( uint32 delay )
+{
+    SysTick->LOAD   =   72 * delay;
+    SysTick->CTRL   =   0x00000005;
+    while( !( SysTick->CTRL & 0x00010000 ) );
+    SysTick->CTRL   =   0x00000004;
+}
+
+void    DELAY_MS( uint32 delay )
+{
+    for( ; delay > 0; delay-- )
+        DELAY_US( 1000 );
+}
 
 

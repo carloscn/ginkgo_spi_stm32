@@ -4,7 +4,7 @@
 #include "stm32f10x.h"
 #include "stm32f10x_spi.h"
 #include "stm32f10x_gpio.h"
-#include "type.h"
+#include "global.h"
 
 
 #define					SPI_CONFIG_MODE_MASTER					0x00
@@ -43,12 +43,12 @@
  */
 struct	spi_hw_t {
 
-	GPIO_TypeDef	*spi_port;
+	GPIO_TypeDef	*port;
 	uint16		mosi_pin;
 	uint16		miso_pin;
 	uint16		clk_pin;
 	uint16		ce_pin;
-	uint16      spi_sys_clock;
+	uint16      sys_clock;
 };
 
 /**
@@ -70,17 +70,24 @@ struct	spi_hw_t {
  */
 struct spi_config_t {
 	
-	SPI_TypeDef	 *spi_num;
-	uint32	spi_clk;
-	uint16	spi_mode;
-	uint16 	spi_pol;
-	uint16	spi_phase;
-	uint16  spi_direction;
+	SPI_TypeDef	 *num;
+	uint32	clk;
+	uint16	mode;
+	uint16 	pol;
+	uint16	phase;
+	uint16  direction;
 	struct 	spi_format {
-		uint16	spi_char_num;
-		uint16	spi_first_bit;
+		uint16	char_num;
+		uint16	first_bit;
 	} format;
-	
+	struct      spi_init_t {
+
+	    uint16_t    iqrn;
+	    uint16_t    preemption_priority;
+	    uint16_t    sub_priority;
+
+	} irq;
+
 };
 
 /**
@@ -113,10 +120,10 @@ struct	spi_t {
 	struct spi_t *self;
 	struct spi_config_t spi_cfg;
 	
-	void	(*spi_init)				( struct spi_t *self);
-	void	(*spi_pin_set)			( struct spi_t *self,   struct ad9833_t *dev );
-	void	(*spi_read)				( struct spi_t *self, 	uint16 *read_val );
-	void	(*spi_write )			( struct spi_t *self, uint16 *vals, uint16 length );
+	void	(*init)				( struct spi_t *self);
+	void	(*pin_set)			( struct spi_t *self);
+	void	(*read)				( struct spi_t *self, 	uint16 *read_val );
+	void	(*write )			( struct spi_t *self, uint16 *vals, uint16 length );
 
 };
 
@@ -124,7 +131,6 @@ extern void	ex_spi_pin_set( struct spi_t *self );
 extern void	ex_spi_write( struct spi_t *self, uint16 *vals, uint16 length );
 extern void	ex_spi_read( struct spi_t *self, uint16 *read_val );
 extern void ex_spi_init( struct spi_t *self );
-
 
 
 #endif
