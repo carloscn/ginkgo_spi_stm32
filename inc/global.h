@@ -13,7 +13,7 @@
  *                       \\/         ) | |
  *                        \         /_ | |__
  *                        (___________))))))) Carlos Lopez. (Wei Haochen)
-***/
+ ***/
 // STM32   Project.                                            			GitLab
 /****************************************************************************/
 /*                                                                          */
@@ -44,6 +44,8 @@
 #include <stdbool.h>
 #include "spi.h"
 #include "led.h"
+#include "timer.h"
+
 
 
 

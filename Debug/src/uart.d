@@ -33,7 +33,9 @@ src/uart.o: ../src/uart.c \
  /home/delvis/workspace/AC6/GINKGO_SPI_STM32_AC6/inc/main.h \
  /home/delvis/workspace/AC6/GINKGO_SPI_STM32_AC6/inc/spi.h \
  /home/delvis/workspace/AC6/GINKGO_SPI_STM32_AC6/StdPeriph_Driver/inc/stm32f10x_spi.h \
+ /home/delvis/workspace/AC6/GINKGO_SPI_STM32_AC6/inc/global.h \
  /home/delvis/workspace/AC6/GINKGO_SPI_STM32_AC6/inc/led.h \
+ /home/delvis/workspace/AC6/GINKGO_SPI_STM32_AC6/inc/timer.h \
  /home/delvis/workspace/AC6/GINKGO_SPI_STM32_AC6/inc/uart.h \
  /home/delvis/workspace/AC6/GINKGO_SPI_STM32_AC6/StdPeriph_Driver/inc/stm32f10x_usart.h
 
@@ -105,7 +107,11 @@ src/uart.o: ../src/uart.c \
 
 /home/delvis/workspace/AC6/GINKGO_SPI_STM32_AC6/StdPeriph_Driver/inc/stm32f10x_spi.h:
 
+/home/delvis/workspace/AC6/GINKGO_SPI_STM32_AC6/inc/global.h:
+
 /home/delvis/workspace/AC6/GINKGO_SPI_STM32_AC6/inc/led.h:
+
+/home/delvis/workspace/AC6/GINKGO_SPI_STM32_AC6/inc/timer.h:
 
 /home/delvis/workspace/AC6/GINKGO_SPI_STM32_AC6/inc/uart.h:
 

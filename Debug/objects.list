@@ -30,5 +30,6 @@
 "src/spi.o"
 "src/syscalls.o"
 "src/system_stm32f10x.o"
+"src/timer.o"
 "src/uart.o"
 "startup/startup_stm32.o"

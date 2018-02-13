@@ -18,13 +18,13 @@ void	ad9833_set_register_value( struct 	ad9833_t *self,
 	
 	data[1]		=	( uint16 )( ( reg_value & 0xFF00 ) >> 8 );
 	data[2]		=	( uint16 )( ( reg_value & 0x00FF ) >> 0 );
-	self->hw.ex_spi->spi_write( self->hw.ex_spi, data, 2 );
+	self->hw.ex_spi->write( self->hw.ex_spi, data, 2 );
 }
 
 
 void	ad9833_init( struct	 ad9833_t *self )
 {
-	self->hw.ex_spi->spi_init( self->hw.ex_spi );
+	self->hw.ex_spi->init( self->hw.ex_spi );
 	self->set_register_value( self, AD9833_REG_CMD | AD9833_RESET );
 }
 
