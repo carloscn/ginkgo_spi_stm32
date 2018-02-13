@@ -48,12 +48,10 @@ struct	spi_hw_t {
 	uint16		miso_pin;
 	uint16		clk_pin;
 	uint16		ce_pin;
-<<<<<<< HEAD
+
 	uint16      periph_clock;
 	uint16      gpio_clock;
-=======
-	uint16      sys_clock;
->>>>>>> 0be73c22922dcb0bc3a5d374333c16d7f7a097b1
+
 };
 
 /**

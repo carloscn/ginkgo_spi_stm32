@@ -4,7 +4,7 @@
 void	ex_spi_pin_set( struct spi_t *self )
 {
 	GPIO_InitTypeDef	io_cfg;
-<<<<<<< HEAD
+
 	if( self->spi_cfg.num   ==  SPI1) {
 	    RCC_APB2PeriphClockCmd(self->hw.periph_clock, ENABLE);
 	    RCC_APB2PeriphClockCmd(self->hw.gpio_clock, ENABLE);
@@ -12,9 +12,7 @@ void	ex_spi_pin_set( struct spi_t *self )
 	    RCC_APB1PeriphClockCmd(self->hw.periph_clock, ENABLE);
 	    RCC_APB2PeriphClockCmd(self->hw.gpio_clock, ENABLE);
 	}
-=======
-	RCC_APB2PeriphClockCmd(self->hw.sys_clock, ENABLE);
->>>>>>> 0be73c22922dcb0bc3a5d374333c16d7f7a097b1
+
 	io_cfg.GPIO_Pin     =   self->hw.mosi_pin | self->hw.mosi_pin | self->hw.clk_pin;
 	io_cfg.GPIO_Mode	= 	GPIO_Mode_AF_PP;
 	io_cfg.GPIO_Speed	=	GPIO_Speed_50MHz;
@@ -41,7 +39,7 @@ void 	ex_spi_init( struct spi_t *self )
 		
 	SPI_InitTypeDef		spi_cfg;
 	self->pin_set( self );
-<<<<<<< HEAD
+
     if( self->spi_cfg.num   ==  SPI1) {
         RCC_APB2PeriphResetCmd(RCC_APB2Periph_SPI1,ENABLE);
         RCC_APB2PeriphResetCmd(RCC_APB2Periph_SPI1,DISABLE);
@@ -49,9 +47,6 @@ void 	ex_spi_init( struct spi_t *self )
         RCC_APB1PeriphResetCmd(RCC_APB1Periph_SPI2,ENABLE);
         RCC_APB1PeriphResetCmd(RCC_APB1Periph_SPI2,DISABLE);
     }
-=======
-
->>>>>>> 0be73c22922dcb0bc3a5d374333c16d7f7a097b1
 	spi_cfg.SPI_Direction			=	self->spi_cfg.direction;
 	spi_cfg.SPI_Mode				=	self->spi_cfg.mode;
 	spi_cfg.SPI_CPOL				=	self->spi_cfg.pol;
