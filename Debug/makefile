@@ -32,10 +32,10 @@ endif
 all: GINKGO_SPI_STM32_AC6.elf
 
 # Tool invocations
-GINKGO_SPI_STM32_AC6.elf: $(OBJS) $(USER_OBJS) /home/delvis/workspace/AC6/GINKGO_SPI_STM32_AC6/LinkerScript.ld
+GINKGO_SPI_STM32_AC6.elf: $(OBJS) $(USER_OBJS) D:\Workspace\AC6\GINKGO_SPI_STM32_AC6\LinkerScript.ld
 	@echo 'Building target: $@'
 	@echo 'Invoking: MCU GCC Linker'
-	arm-none-eabi-gcc -mcpu=cortex-m3 -mthumb -mfloat-abi=soft -T"/home/delvis/workspace/AC6/GINKGO_SPI_STM32_AC6/LinkerScript.ld" -Wl,-Map=output.map -Wl,--gc-sections -o "GINKGO_SPI_STM32_AC6.elf" @"objects.list" $(USER_OBJS) $(LIBS) -lm
+	arm-none-eabi-gcc -mcpu=cortex-m3 -mthumb -mfloat-abi=soft -T"D:\Workspace\AC6\GINKGO_SPI_STM32_AC6\LinkerScript.ld" -Wl,-Map=output.map -Wl,--gc-sections -o "GINKGO_SPI_STM32_AC6.elf" @"objects.list" $(USER_OBJS) $(LIBS) -lm
 	@echo 'Finished building target: $@'
 	@echo ' '
 	$(MAKE) --no-print-directory post-build

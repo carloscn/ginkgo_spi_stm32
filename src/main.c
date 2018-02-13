@@ -61,7 +61,11 @@ struct	spi_t		ad9833_spi, *ad9833_spi_handle;
 struct  led_t       led_dev,    *led_dev_handle;
 struct  spi_t       test_spi;
 struct  timer_t     timer, *timer_handle;
+<<<<<<< HEAD
 uint16_t            rom[256] = {0};
+=======
+uint16_t    rom[256] = {0};
+>>>>>>> 0be73c22922dcb0bc3a5d374333c16d7f7a097b1
 
 
 
@@ -84,6 +88,10 @@ uint16_t            rom[256] = {0};
 int main(void)
 {
     SystemInit();
+<<<<<<< HEAD
+=======
+
+>>>>>>> 0be73c22922dcb0bc3a5d374333c16d7f7a097b1
     NVIC_Configuration();
     led_dev_handle      =   &led_dev;
     ad9833_dev_handle   =   &ad9833_dev;
@@ -97,10 +105,22 @@ int main(void)
     TIMER_INIT( timer_handle );
     timer.start(timer_handle);
     while(1) {
+<<<<<<< HEAD
 
         test_spi.write( &test_spi, rom, 256 );
 
 
+=======
+#if 0
+        //test_spi.write( &test_spi, rom, 256 );
+        led_dev_handle->on( &led_dev, LED0 );
+        led_dev_handle->on( &led_dev, LED1 );
+        DELAY_MS(40);
+        led_dev_handle->off( &led_dev, LED0 );
+        led_dev_handle->off( &led_dev, LED1 );
+        DELAY_MS(1050);
+#endif
+>>>>>>> 0be73c22922dcb0bc3a5d374333c16d7f7a097b1
     }
 }
 
@@ -170,6 +190,7 @@ void    SPI_INIT( struct spi_t *spi_handle )
      * Set spi hardware parameters.
      * -> Do not care about the pin correspondence, because it is using a peripheral SPI.
      * */
+<<<<<<< HEAD
     if( spi_handle->spi_cfg.num ==  SPI1) {
         spi_handle->hw.periph_clock     =   RCC_APB2Periph_SPI1;
         spi_handle->hw.gpio_clock       =   RCC_APB2Periph_GPIOA;
@@ -187,6 +208,15 @@ void    SPI_INIT( struct spi_t *spi_handle )
         spi_handle->hw.ce_pin           =   0;
         spi_handle->hw.port             =   GPIOB;
     }
+=======
+    spi_handle->hw.sys_clock        =   RCC_APB2Periph_SPI1 | RCC_APB2Periph_GPIOA ;
+    spi_handle->hw.clk_pin          =   GPIO_Pin_5;
+    spi_handle->hw.miso_pin         =   GPIO_Pin_6;
+    spi_handle->hw.mosi_pin         =   GPIO_Pin_7;
+    spi_handle->hw.ce_pin           =   0;
+    spi_handle->hw.port             =   GPIOA;
+
+>>>>>>> 0be73c22922dcb0bc3a5d374333c16d7f7a097b1
     /*
      * Set SPI properties.
      *
@@ -264,6 +294,7 @@ void    TIMER_INIT( struct timer_t *timer_handle )
 
     timer_handle->init( timer_handle );
 }
+<<<<<<< HEAD
 
 /**
  * \brief    This function is delay time for SYSTEM.
@@ -289,6 +320,33 @@ void    DELAY_US( uint32 delay )
     SysTick->CTRL   =   0x00000004;
 }
 
+=======
+
+/**
+ * \brief    This function is delay time for SYSTEM.
+ *
+ * \offer    Wei Haochen
+ *
+ * \param    struct ad7606_t (in ad9833.h document)
+ *
+ * \return   None.
+ *
+ *               ____       __________________
+ * \note  covst_a    \_____/
+ *               ____       __________________
+ *        covst_b    \_____/
+ *                   |<--->|
+ *                     5us
+ */
+void    DELAY_US( uint32 delay )
+{
+    SysTick->LOAD   =   72 * delay;
+    SysTick->CTRL   =   0x00000005;
+    while( !( SysTick->CTRL & 0x00010000 ) );
+    SysTick->CTRL   =   0x00000004;
+}
+
+>>>>>>> 0be73c22922dcb0bc3a5d374333c16d7f7a097b1
 void    DELAY_MS( uint32 delay )
 {
     for( ; delay > 0; delay-- )
